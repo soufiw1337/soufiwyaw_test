@@ -3224,7 +3224,7 @@ conditional_antiaims.handle = function(cmd)
         ['Spin'] = 360 * globals.curtime() * 4,  -- Быстрый спин
         ['Jumpstyle'] =  (globals.tickcount() % 10 == 0) and (client.random_int(0, 1) == 1 and 90 or -90) or 0, -- Флики строго ±90 градусов
         ['Flick'] = client.random_int(-60, 60) + (globals.tickcount() % 4 == 0 and client.random_int(-180, 180) or 0), -- Лютый анхитабл
-        ['Switch'] = (globals.tickcount() % client.random_int(30, 50) == 0 and (switch_state = -switch_state)) and switch_state * 90 or switch_state * 90, -- Медленный рандомный свитч
+        ['Switch'] = (globals.tickcount() % client.random_int(30, 50) == 0) and (switch_state = -switch_state) and switch_state * 90 or switch_state * 90,
         ['Custom'] = new_config.yaw_slider
 	}
     
