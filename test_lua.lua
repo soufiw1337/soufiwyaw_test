@@ -3264,6 +3264,7 @@ conditional_antiaims.handle = function(cmd)
 	end
 
 	local random_static_pitch = math.random(-89, 89)  -- случайный питч
+	local spin_state = -89  -- Начальный угол
 
 	local pitch_tbl = {
         ['Disabled'] = 89,
@@ -3271,8 +3272,7 @@ conditional_antiaims.handle = function(cmd)
         ['Zero'] = 0,
         ['Random'] = math.random(-89, 89),
 		['Clock'] = math.sin(globals.curtime() * 10) * 89,  -- Спинит от -89 до 89
-		['Spin'] = (globals.tickcount() % 180 == 0) and 89 or (globals.tickcount() % 180 == 90 and -89 or 0),  -- Спин от -89 до 89 с резким сбросом
-		['Jitter'] = (globals.tickcount() % 2 == 0) and -89 or 89,  -- Джиттерит между -89 и 89
+		['Spin'] = (globals.tickcount() % 180 == 0 and spin_state == 89) and -89 or (spin_state == -89 and 89 or spin_state),  -- Спин от -89 до 89 с резким сбросом
 		['RandomStatic'] = (globals.tickcount() % 2 == 0) and math.random(-89, 89) or random_static_pitch,  -- Рандомный статик на 2 тика
         ['Custom'] = new_config.pitch_slider
 
