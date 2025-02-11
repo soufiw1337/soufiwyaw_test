@@ -1303,9 +1303,9 @@ local Vars = {
 			manuals_over_fs = group:checkbox('Manuals  »  Over FS'),
 			lag_options = group:combobox('Manuals  »  Force defensive\nmanuals' , {'Default', 'Always on'}),
 			defensive_aa = group:checkbox('Manuals  »  Defensive AA\nmanuals'),
-			defensive_pitch = group:combobox('Manuals  »  Pitch\ndefensive_pitch\nmanuals', {'Disabled', 'Up', 'Zero', 'Random', 'Custom'}),
+			defensive_pitch = group:combobox('Manuals  »  Pitch\ndefensive_pitch\nmanuals', {'Disabled', 'Up', 'Zero', 'Random', 'Spin', 'Custom'}),
 			pitch_slider = group:slider('\ncustom_defensive_pitch\nmanuals', -89, 89, 0),
-			defensive_yaw = group:combobox('Manuals  »  Yaw\ndefensive_yaw\nmanuals', {'Disabled', 'Sideways', 'Opposite', "Spin", "Leg Breaker",  'Flick', 'Switch', 'Spin180', 'Jitter90', 'RandomYaw', 'RandomStaticYaw', 'Custom'}),
+			defensive_yaw = group:combobox('Manuals  »  Yaw\ndefensive_yaw\nmanuals', {'Disabled', 'Sideways', 'Opposite', "Spin", "Leg Breaker",  'Flick', 'Switch', 'Spin180', 'Jitter90', 'RandomYaw', 'RandomStaticYaw', 'Spin', 'Custom'}),
 			yaw_slider = group:slider('\ncustom_defensive_yaw\nmanuals', -180, 180, 0)
 		
 		},
@@ -1316,7 +1316,7 @@ local Vars = {
 			head_settings = group:multiselect('Safe  »  Head settings', {'Height', 'High Distance'}),
 			lag_options = group:combobox('Safe  »  Force defensive\nsafe' , {'Default', 'Always on'}),
 			defensive_aa = group:checkbox('Safe  »  Defensive AA\nsafe'),
-			defensive_pitch = group:combobox('Safe  »  Pitch\ndefensive_pitch\nsafe', {'Disabled', 'Up', 'Zero', 'Random', 'Custom'}),
+			defensive_pitch = group:combobox('Safe  »  Pitch\ndefensive_pitch\nsafe', {'Disabled', 'Up', 'Zero', 'Random', 'Spin', 'Custom'}),
 			pitch_slider = group:slider('\ncustom_defensive_pitch\nsafe', -89, 89, 0),
 			defensive_yaw = group:combobox('Safe  »  Yaw\ndefensive_yaw\nsafe', {'Disabled', 'Sideways', 'Opposite', "Spin", "Leg Breaker", 'Switch', 'Flick', 'Spin180', 'Jitter90', 'RandomYaw', 'RandomStaticYaw',  'Custom'}),
 			yaw_slider = group:slider('\ncustom_defensive_yaw\nsafe', -180, 180, 0)
@@ -2766,7 +2766,7 @@ for k, name in pairs(conditional_antiaims.conditions_names) do
 	if name ~= 'Fakelag' then
 		conditional_antiaims.conditions[k].lag_options = group:combobox('Force defensive' .. name_unique, {'Default', 'Always on'})
 		conditional_antiaims.conditions[k].defensive_aa = group:checkbox('Defensive AA' .. name_unique)
-		conditional_antiaims.conditions[k].defensive_pitch = group:combobox('Pitch\ndefensive_pitch' .. name_unique, {'Disabled', 'Up', 'Zero', 'Random', 'Custom'})
+		conditional_antiaims.conditions[k].defensive_pitch = group:combobox('Pitch\ndefensive_pitch' .. name_unique, {'Disabled', 'Up', 'Zero', 'Random', 'Spin', 'Custom'})
 		conditional_antiaims.conditions[k].pitch_slider = group:slider('\ncustom_defensive_pitch' .. name_unique, -89, 89, 0, 0, '°')
 		conditional_antiaims.conditions[k].defensive_yaw = group:combobox('Yaw\ndefensive_yaw' .. name_unique, {'Disabled', 'Sideways', 'Opposite', "Spin", "Leg Breaker", 'Switch', 'Flick', 'Spin180', 'Jitter90', 'RandomYaw', 'RandomStaticYaw', 'Custom'})
 		conditional_antiaims.conditions[k].yaw_slider = group:slider('\ncustom_defensive_yaw' .. name_unique, -180, 180, 0, 0, '°')
@@ -3268,6 +3268,7 @@ conditional_antiaims.handle = function(cmd)
         ['Up'] = -89,
         ['Zero'] = 0,
         ['Random'] = math.random(-89, 89),
+		['Spin'] = math.sin(globals.curtime() * 10) * 89  -- Спинит от -89 до 89
         ['Custom'] = new_config.pitch_slider
 
         
