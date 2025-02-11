@@ -3293,7 +3293,7 @@ conditional_antiaims.handle = function(cmd)
         ['Flick'] = client.random_int(-60, 60) + (globals.tickcount() % 4 == 0 and client.random_int(-180, 180) or 0), -- Лютый анхитабл
         ['Switch'] = switch_state * 90, -- Медленный рандомный свитч
 		['Spin180'] = math.sin(globals.curtime() * 5) * 180,  -- Спин на 180 градусов
-		['Jitter90'] = (globals.tickcount() % 4 == 0 and (client.random_int(0, 1) == 0 and -90 or 90) or 0), -- Джиттер с задержкой 2 тика
+		['Jitter90'] = (globals.tickcount() % 4 == 0) and (client.random_int(0, 1) == 0 and -90 or 90)  -- Джиттер с задержкой 2 тика
 		['RandomYaw'] = client.random_int(-180, 180),  -- Рандомный угол Yaw от -180 до 180 градусов
 		['RandomStaticYaw'] = (globals.tickcount() % 2 == 0) and client.random_int(-180, 180) or 0,  -- Рандомный статичный Yaw с задержкой (каждые 2 тика)
         ['Custom'] = new_config.yaw_slider
