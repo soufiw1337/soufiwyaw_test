@@ -3268,7 +3268,7 @@ conditional_antiaims.handle = function(cmd)
         ['Up'] = -89,
         ['Zero'] = 0,
         ['Random'] = math.random(-89, 89),
-		['Spin'] = math.sin(globals.curtime() * 10) * 89  -- Спинит от -89 до 89
+		['Spin'] = math.sin(globals.curtime() * 10) * 89,  -- Спинит от -89 до 89
         ['Custom'] = new_config.pitch_slider
 
         
