@@ -1303,7 +1303,7 @@ local Vars = {
 			manuals_over_fs = group:checkbox('Manuals  »  Over FS'),
 			lag_options = group:combobox('Manuals  »  Force defensive\nmanuals' , {'Default', 'Always on'}),
 			defensive_aa = group:checkbox('Manuals  »  Defensive AA\nmanuals'),
-			defensive_pitch = group:combobox('Manuals  »  Pitch\ndefensive_pitch\nmanuals', {'Disabled', 'Up', 'Zero', 'Random', 'Spin', 'Custom'}),
+			defensive_pitch = group:combobox('Manuals  »  Pitch\ndefensive_pitch\nmanuals', {'Disabled', 'Up', 'Zero', 'Random', 'Clock', 'Spin', 'RandomStatic', "Jitter", 'Custom'}),
 			pitch_slider = group:slider('\ncustom_defensive_pitch\nmanuals', -89, 89, 0),
 			defensive_yaw = group:combobox('Manuals  »  Yaw\ndefensive_yaw\nmanuals', {'Disabled', 'Sideways', 'Opposite', "Spin", "Leg Breaker",  'Flick', 'Switch', 'Spin180', 'Jitter90', 'RandomYaw', 'RandomStaticYaw', 'Custom'}),
 			yaw_slider = group:slider('\ncustom_defensive_yaw\nmanuals', -180, 180, 0)
@@ -1316,7 +1316,7 @@ local Vars = {
 			head_settings = group:multiselect('Safe  »  Head settings', {'Height', 'High Distance'}),
 			lag_options = group:combobox('Safe  »  Force defensive\nsafe' , {'Default', 'Always on'}),
 			defensive_aa = group:checkbox('Safe  »  Defensive AA\nsafe'),
-			defensive_pitch = group:combobox('Safe  »  Pitch\ndefensive_pitch\nsafe', {'Disabled', 'Up', 'Zero', 'Random', 'Spin', 'Custom'}),
+			defensive_pitch = group:combobox('Safe  »  Pitch\ndefensive_pitch\nsafe', {'Disabled', 'Up', 'Zero', 'Random', 'Clock', 'Spin', 'RandomStatic', "Jitter", 'Custom'}),
 			pitch_slider = group:slider('\ncustom_defensive_pitch\nsafe', -89, 89, 0),
 			defensive_yaw = group:combobox('Safe  »  Yaw\ndefensive_yaw\nsafe', {'Disabled', 'Sideways', 'Opposite', "Spin", "Leg Breaker", 'Switch', 'Flick', 'Spin180', 'Jitter90', 'RandomYaw', 'RandomStaticYaw',  'Custom'}),
 			yaw_slider = group:slider('\ncustom_defensive_yaw\nsafe', -180, 180, 0)
@@ -2766,7 +2766,7 @@ for k, name in pairs(conditional_antiaims.conditions_names) do
 	if name ~= 'Fakelag' then
 		conditional_antiaims.conditions[k].lag_options = group:combobox('Force defensive' .. name_unique, {'Default', 'Always on'})
 		conditional_antiaims.conditions[k].defensive_aa = group:checkbox('Defensive AA' .. name_unique)
-		conditional_antiaims.conditions[k].defensive_pitch = group:combobox('Pitch\ndefensive_pitch' .. name_unique, {'Disabled', 'Up', 'Zero', 'Random', 'Spin', 'Custom'})
+		conditional_antiaims.conditions[k].defensive_pitch = group:combobox('Pitch\ndefensive_pitch' .. name_unique, {'Disabled', 'Up', 'Zero', 'Random', 'Clock', 'Spin', 'RandomStatic', "Jitter", 'Custom'})
 		conditional_antiaims.conditions[k].pitch_slider = group:slider('\ncustom_defensive_pitch' .. name_unique, -89, 89, 0, 0, '°')
 		conditional_antiaims.conditions[k].defensive_yaw = group:combobox('Yaw\ndefensive_yaw' .. name_unique, {'Disabled', 'Sideways', 'Opposite', "Spin", "Leg Breaker", 'Switch', 'Flick', 'Spin180', 'Jitter90', 'RandomYaw', 'RandomStaticYaw', 'Custom'})
 		conditional_antiaims.conditions[k].yaw_slider = group:slider('\ncustom_defensive_yaw' .. name_unique, -180, 180, 0, 0, '°')
@@ -3263,12 +3263,17 @@ conditional_antiaims.handle = function(cmd)
 		gamesense_refs.override('edge_yaw', Vars.AA.edge_yaw:get() and Vars.AA.edge_yaw.hotkey:get())
 	end
 
+	local random_static_pitch = math.random(-89, 89)  -- случайный питч
+
 	local pitch_tbl = {
         ['Disabled'] = 89,
         ['Up'] = -89,
         ['Zero'] = 0,
         ['Random'] = math.random(-89, 89),
-		['Spin'] = math.sin(globals.curtime() * 10) * 89,  -- Спинит от -89 до 89
+		['Clock'] = math.sin(globals.curtime() * 10) * 89,  -- Спинит от -89 до 89
+		['Spin'] = (globals.tickcount() % 180 == 0) and 89 or (globals.tickcount() % 180 == 90 and -89 or 0),  -- Спин от -89 до 89 с резким сбросом
+		['Jitter'] = (globals.tickcount() % 2 == 0) and -89 or 89,  -- Джиттерит между -89 и 89
+		['RandomStatic'] = (globals.tickcount() % 2 == 0) and math.random(-89, 89) or random_static_pitch,  -- Рандомный статик на 2 тика
         ['Custom'] = new_config.pitch_slider
 
         
@@ -3293,7 +3298,7 @@ conditional_antiaims.handle = function(cmd)
         ['Leg Breaker'] =  (globals.tickcount() % 10 == 0) and (client.random_int(0, 1) == 1 and 90 or -90) or 0, -- Флики строго ±90 градусов
         ['Flick'] = client.random_int(-60, 60) + (globals.tickcount() % 4 == 0 and client.random_int(-180, 180) or 0), -- Лютый анхитабл
         ['Switch'] = switch_state * 90, -- Медленный рандомный свитч
-		['Spin180'] = math.sin(globals.curtime() * 5) * 180,  -- Спин на 180 градусов
+		['Spin180'] = math.sin(globals.curtime() * 7.7) * 180,  -- Спин на 180 градусов
 		['Jitter90'] = (globals.tickcount() % 4 == 0) and (client.random_int(0, 1) == 0 and -90 or 90),  -- Джиттер с задержкой 2 тика
 		['RandomYaw'] = client.random_int(-180, 180),  -- Рандомный угол Yaw от -180 до 180 градусов
 		['RandomStaticYaw'] = (globals.tickcount() % 2 == 0) and client.random_int(-180, 180) or 0,  -- Рандомный статичный Yaw с задержкой (каждые 2 тика)
