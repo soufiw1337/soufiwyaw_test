@@ -1206,7 +1206,7 @@ local Vars = {
     Home = {
 		group:label('[\vsoufiwyaw\r] Information'),
 		group:label('User: \v' .. information.user),
-		group:label('Version: \v0.1'),
+		group:label('Version: \v0.2 - Alpha'),
 		group:label(' '),
 		group:label('[\vsoufiwyaw\r] Presets'),
 
@@ -1305,7 +1305,7 @@ local Vars = {
 			defensive_aa = group:checkbox('Manuals  »  Defensive AA\nmanuals'),
 			defensive_pitch = group:combobox('Manuals  »  Pitch\ndefensive_pitch\nmanuals', {'Disabled', 'Up', 'Zero', 'Random', 'Clock',  'RandomStatic', "Jitter", 'Custom'}),
 			pitch_slider = group:slider('\ncustom_defensive_pitch\nmanuals', -89, 89, 0),
-			defensive_yaw = group:combobox('Manuals  »  Yaw\ndefensive_yaw\nmanuals', {'Disabled', 'Sideways', 'Opposite', "Spin", "Leg Breaker",  'Flick', 'Switch', 'Spin180', 'Jitter90', 'RandomYaw', 'RandomStaticYaw', 'Custom'}),
+			defensive_yaw = group:combobox('Manuals  »  Yaw\ndefensive_yaw\nmanuals', {'Disabled', 'Sideways', 'Opposite', "Spin", "Leg Breaker",  'Flick', 'Switch', 'Spin180', 'RandomYaw', 'RandomStaticYaw', 'Custom'}),
 			yaw_slider = group:slider('\ncustom_defensive_yaw\nmanuals', -180, 180, 0)
 		
 		},
@@ -1318,7 +1318,7 @@ local Vars = {
 			defensive_aa = group:checkbox('Safe  »  Defensive AA\nsafe'),
 			defensive_pitch = group:combobox('Safe  »  Pitch\ndefensive_pitch\nsafe', {'Disabled', 'Up', 'Zero', 'Random', 'Clock', 'RandomStatic', "Jitter", 'Custom'}),
 			pitch_slider = group:slider('\ncustom_defensive_pitch\nsafe', -89, 89, 0),
-			defensive_yaw = group:combobox('Safe  »  Yaw\ndefensive_yaw\nsafe', {'Disabled', 'Sideways', 'Opposite', "Spin", "Leg Breaker", 'Switch', 'Flick', 'Spin180', 'Jitter90', 'RandomYaw', 'RandomStaticYaw',  'Custom'}),
+			defensive_yaw = group:combobox('Safe  »  Yaw\ndefensive_yaw\nsafe', {'Disabled', 'Sideways', 'Opposite', "Spin", "Leg Breaker", 'Switch', 'Flick', 'Spin180',  'RandomYaw', 'RandomStaticYaw',  'Custom'}),
 			yaw_slider = group:slider('\ncustom_defensive_yaw\nsafe', -180, 180, 0)
 		},
 
@@ -2768,7 +2768,7 @@ for k, name in pairs(conditional_antiaims.conditions_names) do
 		conditional_antiaims.conditions[k].defensive_aa = group:checkbox('Defensive AA' .. name_unique)
 		conditional_antiaims.conditions[k].defensive_pitch = group:combobox('Pitch\ndefensive_pitch' .. name_unique, {'Disabled', 'Up', 'Zero', 'Random', 'Clock', 'RandomStatic', "Jitter", 'Custom'})
 		conditional_antiaims.conditions[k].pitch_slider = group:slider('\ncustom_defensive_pitch' .. name_unique, -89, 89, 0, 0, '°')
-		conditional_antiaims.conditions[k].defensive_yaw = group:combobox('Yaw\ndefensive_yaw' .. name_unique, {'Disabled', 'Sideways', 'Opposite', "Spin", "Leg Breaker", 'Switch', 'Flick', 'Spin180', 'Jitter90', 'RandomYaw', 'RandomStaticYaw', 'Custom'})
+		conditional_antiaims.conditions[k].defensive_yaw = group:combobox('Yaw\ndefensive_yaw' .. name_unique, {'Disabled', 'Sideways', 'Opposite', "Spin", "Leg Breaker", 'Switch', 'Flick', 'Spin180', 'RandomYaw', 'RandomStaticYaw', 'Custom'})
 		conditional_antiaims.conditions[k].yaw_slider = group:slider('\ncustom_defensive_yaw' .. name_unique, -180, 180, 0, 0, '°')
 	end
 end
@@ -3298,7 +3298,6 @@ conditional_antiaims.handle = function(cmd)
         ['Flick'] = client.random_int(-60, 60) + (globals.tickcount() % 4 == 0 and client.random_int(-180, 180) or 0), -- Лютый анхитабл
         ['Switch'] = switch_state * 90, -- Медленный рандомный свитч
 		['Spin180'] = math.sin(globals.curtime() * 7.7) * 180,  -- Спин на 180 градусов
-		['Jitter90'] = (globals.tickcount() % 4 == 0) and (client.random_int(0, 1) == 0 and -90 or 90),  -- Джиттер с задержкой 2 тика
 		['RandomYaw'] = client.random_int(-180, 180),  -- Рандомный угол Yaw от -180 до 180 градусов
 		['RandomStaticYaw'] = (globals.tickcount() % 2 == 0) and client.random_int(-180, 180) or 0,  -- Рандомный статичный Yaw с задержкой (каждые 2 тика)
         ['Custom'] = new_config.yaw_slider
