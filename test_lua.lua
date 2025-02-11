@@ -1305,7 +1305,7 @@ local Vars = {
 			defensive_aa = group:checkbox('Manuals  »  Defensive AA\nmanuals'),
 			defensive_pitch = group:combobox('Manuals  »  Pitch\ndefensive_pitch\nmanuals', {'Disabled', 'Up', 'Zero', 'Random', 'Custom'}),
 			pitch_slider = group:slider('\ncustom_defensive_pitch\nmanuals', -89, 89, 0),
-			defensive_yaw = group:combobox('Manuals  »  Yaw\ndefensive_yaw\nmanuals', {'Disabled', 'Sideways', 'Opposite', "Spin", "Jumpstyle", 'Flick', 'Switch', 'Custom'}),
+			defensive_yaw = group:combobox('Manuals  »  Yaw\ndefensive_yaw\nmanuals', {'Disabled', 'Sideways', 'Opposite', "Spin", "Leg Breaker", 'Flick', 'Switch', 'Custom'}),
 			yaw_slider = group:slider('\ncustom_defensive_yaw\nmanuals', -180, 180, 0)
 		
 		},
@@ -1318,7 +1318,7 @@ local Vars = {
 			defensive_aa = group:checkbox('Safe  »  Defensive AA\nsafe'),
 			defensive_pitch = group:combobox('Safe  »  Pitch\ndefensive_pitch\nsafe', {'Disabled', 'Up', 'Zero', 'Random', 'Custom'}),
 			pitch_slider = group:slider('\ncustom_defensive_pitch\nsafe', -89, 89, 0),
-			defensive_yaw = group:combobox('Safe  »  Yaw\ndefensive_yaw\nsafe', {'Disabled', 'Sideways', 'Opposite', "Spin", "Jumpstyle", 'Switch', 'Flick',  'Custom'}),
+			defensive_yaw = group:combobox('Safe  »  Yaw\ndefensive_yaw\nsafe', {'Disabled', 'Sideways', 'Opposite', "Spin", "Leg Breaker", 'Switch', 'Flick',  'Custom'}),
 			yaw_slider = group:slider('\ncustom_defensive_yaw\nsafe', -180, 180, 0)
 		},
 
@@ -1571,31 +1571,90 @@ Vars.Home.export:set_callback(function()
 end)
 
 local function initDatabase()
+    -- Проверка, существует ли конфигурация, если нет - создаем пустую
     if database.read(protected.database.configs) == nil then
         database.write(protected.database.configs, {})
     end
 
+    -- Ссылка на файл с конфигурациями
     local link = 'https://cdn.discordapp.com/attachments/1146862113223094292/1160979637061570690/message.txt'
 
+    -- Получаем данные с сервера
     http.get(link, function(success, response)
         if not success then
             print('Failed to get presets')
             return
         end
 
-		local decode = base64.decode(response.body, 'base64')
-		local toTable = json.parse(decode)
+        -- Проверка, что тело ответа не пустое
+        if not response.body or response.body == "" then
+            print('Received empty response body')
+            return
+        end
 
-        table.insert(presets, { name = '*Default', config = base64.encode(json.stringify(toTable.config)), config2 = base64.encode(json.stringify(toTable.config2))})
+        -- Логирование тела ответа для диагностики
+        print('Response body: ' .. response.body)
+
+        -- Проверка на наличие ошибки в ответе (например, если это текстовое сообщение)
+        if response.body:match("This content is no longer available") then
+            print('Error: The content is no longer available')
+            return
+        end
+
+        -- Проверка, что ответ содержит корректные символы Base64
+        if not response.body:match("^[A-Za-z0-9+/=]*$") then
+            print('Invalid Base64 data in response')
+            return
+        end
+
+        -- Декодирование Base64
+        local decode = base64.decode(response.body, 'base64')
+        
+        if not decode then
+            print('Failed to decode base64: ' .. response.body)  -- Логирование неудачного декодирования
+            return
+        end
+
+        -- Логирование результата декодирования
+        print('Decoded data: ' .. decode)
+
+        -- Парсинг JSON
+        local toTable = json.parse(decode)
+        if not toTable then
+            print('Failed to parse JSON')
+            return
+        end
+
+        -- Логирование разобранных данных
+        print('Parsed JSON: ' .. json.stringify(toTable))
+
+        -- Проверка, что у полученной таблицы есть нужные поля
+        if not toTable.config or not toTable.config2 then
+            print('Config or Config2 are missing in the parsed data')
+            return
+        end
+
+        -- Вставляем новый пресет в список
+        table.insert(presets, { 
+            name = '*Default', 
+            config = base64.encode(json.stringify(toTable.config)), 
+            config2 = base64.encode(json.stringify(toTable.config2)) 
+        })
+
+        -- Устанавливаем имя по умолчанию
         Vars.Home.name:set('*Default')
 
+        -- Обновляем список конфигураций
         Vars.Home.list:update(config_system.config_list())
     end)
 
-	Vars.Home.list:update(config_system.config_list())
+    -- Обновляем список конфигураций после получения данных
+    Vars.Home.list:update(config_system.config_list())
 end
 
+-- Инициализация базы данных
 initDatabase()
+
 
 animations.base_speed = 0.095
 animations._list = {}
@@ -2709,7 +2768,7 @@ for k, name in pairs(conditional_antiaims.conditions_names) do
 		conditional_antiaims.conditions[k].defensive_aa = group:checkbox('Defensive AA' .. name_unique)
 		conditional_antiaims.conditions[k].defensive_pitch = group:combobox('Pitch\ndefensive_pitch' .. name_unique, {'Disabled', 'Up', 'Zero', 'Random', 'Custom'})
 		conditional_antiaims.conditions[k].pitch_slider = group:slider('\ncustom_defensive_pitch' .. name_unique, -89, 89, 0, 0, '°')
-		conditional_antiaims.conditions[k].defensive_yaw = group:combobox('Yaw\ndefensive_yaw' .. name_unique, {'Disabled', 'Sideways', 'Opposite', "Spin", "Jumpstyle", 'Switch', 'Flick', 'Custom'})
+		conditional_antiaims.conditions[k].defensive_yaw = group:combobox('Yaw\ndefensive_yaw' .. name_unique, {'Disabled', 'Sideways', 'Opposite', "Spin", "Leg Breaker", 'Switch', 'Flick', 'Custom'})
 		conditional_antiaims.conditions[k].yaw_slider = group:slider('\ncustom_defensive_yaw' .. name_unique, -180, 180, 0, 0, '°')
 	end
 end
@@ -3230,7 +3289,7 @@ conditional_antiaims.handle = function(cmd)
         ['Sideways'] = globals.tickcount() % 3 == 0 and client.random_int(-100, -90) or globals.tickcount() % 3 == 1 and 180 or globals.tickcount() % 3 == 2 and client.random_int(90, 100) or 0,
         ['Opposite'] = globals.tickcount() % 2 == 0 and 180 or -180,  -- Вращение через каждые два тика
         ['Spin'] = 360 * globals.curtime() * 4,  -- Быстрый спин
-        ['Jumpstyle'] =  (globals.tickcount() % 10 == 0) and (client.random_int(0, 1) == 1 and 90 or -90) or 0, -- Флики строго ±90 градусов
+        ['Leg Breaker'] =  (globals.tickcount() % 10 == 0) and (client.random_int(0, 1) == 1 and 90 or -90) or 0, -- Флики строго ±90 градусов
         ['Flick'] = client.random_int(-60, 60) + (globals.tickcount() % 4 == 0 and client.random_int(-180, 180) or 0), -- Лютый анхитабл
         ['Switch'] = switch_state * 90, -- Медленный рандомный свитч
         ['Custom'] = new_config.yaw_slider
