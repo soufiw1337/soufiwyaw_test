@@ -1223,7 +1223,7 @@ Home = {
     -- Факты о разработке
     group:label('[\vFun Facts\r]'),
     group:label('Did you know? This script was coded at 3 AM!'),
-    group:label('More than 500 lines of code and counting.'),
+    group:label('More than 3500 lines of code and counting.'),
     group:label('It took 3 energy drinks to write this version.'),
     group:label(' '),
 
