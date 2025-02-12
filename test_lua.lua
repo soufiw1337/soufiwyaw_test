@@ -1194,21 +1194,47 @@ protected.database = {
 	configs = ':soufiwyaw::configs:'
 }
 
+local changelogURL = 'https://raw.githubusercontent.com/soufiw1337/soufiwyaw_test/refs/heads/main/CHANGELOG.md' -- Замените на ссылку к вашему CHANGELOG.md
+local changelogLabels = {}
+
 local information = { user = database.read('soufiwyaw_wtf^^') ~= nil and database.read('soufiwyaw_wtf^^').username or fromdb.username, version = _DEBUG and 'debug' or 'live' }
 local group = ui_handler.group('AA', 'Anti-aimbot angles')
 
 
-local tab = group:combobox('\vsoufiwyaw\r ~ ' .. information.version, {'Home', 'Misc', 'AA'})
+local tab = group:combobox('\vsoufiwyaw\r ~ ' .. information.version, {'Home', 'AA', 'Misc', 'Configs'})
 group:label(' ')
 
 conditional_antiaims.conditions_names = {'Shared', 'Standing', 'Moving', 'Slowwalk', 'Crouch', 'Moving & Crouch', 'Air', 'Air & Crouch', 'Freestand', 'Fakelag', 'On Use'}
 local Vars = {
-    Home = {
-		group:label('[\vsoufiwyaw\r] Information'),
-		group:label('User: \v' .. information.user),
-		group:label('Version: \v0.2 - Alpha'),
-		group:label(' '),
-		group:label('[\vsoufiwyaw\r] Presets'),
+
+    -- Главная информация
+Home = {
+    group:label('[\vsoufiwyaw\r] Information'),
+    group:label('User: \v' .. information.user),
+    group:label('Version: \v0.2 - Alpha'),
+    group:label(' '),
+
+    -- Важная информация
+    group:label('[\vImportant Information\r]'),
+    group:label('This script is in Alpha, expect bugs and issues.'),
+    group:label('Please report them to the developer.'),
+    group:label(' '),
+
+    -- Факты о разработке
+    group:label('[\vFun Facts\r]'),
+    group:label('Did you know? This script was coded at 3 AM!'),
+    group:label('More than 500 lines of code and counting.'),
+    group:label('It took 3 energy drinks to write this version.'),
+    group:label(' '),
+
+    -- Ссылки на поддержку
+    group:label('[\vSupport & Contacts\r]'),
+    group:label('Found a bug? Report it on Discord:'),
+    group:label('discord.gg/example'),
+    group:label(' ')
+},
+	Configs = {
+		group:label('[\vsoufiwyaw\r] Configs'),
 
 		list = group:listbox('Configs', '', false),
 		name = group:textbox('Config name', '', false),
@@ -1336,6 +1362,7 @@ local Vars = {
     }	
 }
 
+
 config_system.get = function(name)
     local database = database.read(protected.database.configs) or {}
 
@@ -1459,7 +1486,7 @@ config_system.load = function(name)
     config_system.load_settings(json.parse(base64.decode(fromDB.config)), json.parse(base64.decode(fromDB.config2)))
 end
 
-Vars.Home.list:set_callback(function(value)
+Vars.Configs.list:set_callback(function(value)
     if value == nil then 
 		return 
 	end
@@ -1471,11 +1498,11 @@ Vars.Home.list:set_callback(function(value)
 	end
 
     name = configs[value:get() + 1] or ''
-    Vars.Home.name:set(name)
+    Vars.Configs.name:set(name)
 end)
 
-Vars.Home.load:set_callback(function()
-	local name = Vars.Home.name:get()
+Vars.Configs.load:set_callback(function()
+	local name = Vars.Configs.name:get()
     if name == '' then return end
 
     local s, p = pcall(config_system.load, name)
@@ -1490,8 +1517,8 @@ Vars.Home.load:set_callback(function()
 	
 end)
 
-Vars.Home.save:set_callback(function()			
-	local name = Vars.Home.name:get()
+Vars.Configs.save:set_callback(function()			
+	local name = Vars.Configs.name:get()
 	if name == '' then return end
 
 	for i, v in pairs(presets) do
@@ -1508,7 +1535,7 @@ Vars.Home.save:set_callback(function()
 
 	local protected = function()
 		config_system.save(name)
-		Vars.Home.list:update(config_system.config_list())
+		Vars.Configs.list:update(config_system.config_list())
 	end
 
 	if pcall(protected) then
@@ -1518,13 +1545,13 @@ Vars.Home.save:set_callback(function()
 	end
 end)
 
-Vars.Home.delete:set_callback(function()
-    local name = Vars.Home.name:get()
+Vars.Configs.delete:set_callback(function()
+    local name = Vars.Configs.name:get()
     if name == '' then return end
 
     if config_system.delete(name) == false then
         print('Failed to delete ' .. name)
-        Vars.Home.list:update(config_system.config_list())
+        Vars.Configs.list:update(config_system.config_list())
         return
     end
 
@@ -1537,13 +1564,13 @@ Vars.Home.delete:set_callback(function()
 
     config_system.delete(name)
 
-    Vars.Home.list:update(config_system.config_list())
-    Vars.Home.list:set((#presets) or '')
-    Vars.Home.name:set(#database.read(protected.database.configs) == 0 and "" or config_system.config_list()[#presets])
+    Vars.Configs.list:update(config_system.config_list())
+    Vars.Configs.list:set((#presets) or '')
+    Vars.Configs.name:set(#database.read(protected.database.configs) == 0 and "" or config_system.config_list()[#presets])
     print('Successfully deleted ' .. name)
 end)
 
-Vars.Home.import:set_callback(function()
+Vars.Configs.import:set_callback(function()
 	local protected = function()
         config_system.import_settings()
     end
@@ -1555,8 +1582,8 @@ Vars.Home.import:set_callback(function()
     end
 end)
 
-Vars.Home.export:set_callback(function()
-    local name = Vars.Home.name:get()
+Vars.Configs.export:set_callback(function()
+    local name = Vars.Configs.name:get()
     if name == '' then return end
 
     local protected = function()
@@ -1642,14 +1669,14 @@ local function initDatabase()
         })
 
         -- Устанавливаем имя по умолчанию
-        Vars.Home.name:set('*Default')
+        Vars.Configs.name:set('*Default')
 
         -- Обновляем список конфигураций
-        Vars.Home.list:update(config_system.config_list())
+        Vars.Configs.list:update(config_system.config_list())
     end)
 
     -- Обновляем список конфигураций после получения данных
-    Vars.Home.list:update(config_system.config_list())
+    Vars.Configs.list:update(config_system.config_list())
 end
 
 -- Инициализация базы данных
